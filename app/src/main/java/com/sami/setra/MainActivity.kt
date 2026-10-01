@@ -48,22 +48,27 @@ fun SetraApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
 
-    // Determine current destination based on route class name
     val currentRoute = navBackStackEntry?.destination?.route
+    val isDetailScreen = currentRoute?.contains("ExerciseDetail") == true
+    val isListScreen = currentRoute?.contains("ExerciseList") == true
+
     val currentDestination: Screen = when {
         currentRoute?.contains("Routines") == true -> Screen.Routines
         currentRoute?.contains("Create") == true -> Screen.Create
         currentRoute?.contains("Progress") == true -> Screen.Progress
         currentRoute?.contains("Profile") == true -> Screen.Profile
+        isListScreen -> Screen.ExerciseList
         else -> Screen.Splits
     }
 
-    val screenTitle = when (currentDestination) {
-        Screen.Splits -> "Splits"
-        Screen.Routines -> "My Routines"
-        Screen.Create -> "Create"
-        Screen.Progress -> "Progress"
-        Screen.Profile -> "Profile"
+    val screenTitle = when {
+        isListScreen -> "Exercise Library"
+        currentDestination == Screen.Splits -> "Splits"
+        currentDestination == Screen.Routines -> "My Routines"
+        currentDestination == Screen.Create -> "Create"
+        currentDestination == Screen.Progress -> "Progress"
+        currentDestination == Screen.Profile -> "Profile"
+        else -> "Setra"
     }
 
     SetraScaffold(
@@ -73,10 +78,12 @@ fun SetraApp(
             navController.navigateToBottomNavDestination(destination)
         },
         topBar = {
-            SetraTopBar(
-                title = screenTitle,
-                subtitle = "Setra • Offline Workout Tracker"
-            )
+            if (!isDetailScreen) {
+                SetraTopBar(
+                    title = screenTitle,
+                    subtitle = "Setra • Offline Workout Tracker"
+                )
+            }
         },
         modifier = modifier
     ) { innerPadding ->

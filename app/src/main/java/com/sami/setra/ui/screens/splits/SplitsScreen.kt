@@ -8,12 +8,13 @@ import com.sami.setra.ui.components.ScreenPlaceholder
 
 @Composable
 fun SplitsScreen(
+    onOpenExerciseLibrary: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ScreenPlaceholder(
         title = "Splits",
         subtitle = "Organize your training routine into structured splits such as Push/Pull/Legs, Upper/Lower, or custom splits.",
-        badgeText = "Phase 1 Foundation",
+        badgeText = "Exercise Library Active",
         icon = Icons.Default.GridView,
         upcomingFeatures = listOf(
             "Pre-built splits (Push/Pull/Legs, Upper/Lower, Arnold)",
@@ -21,6 +22,8 @@ fun SplitsScreen(
             "Rest day scheduling and split rotation",
             "Target muscle group distribution analysis"
         ),
+        actionButtonText = "Browse Exercise Library (870+ Exercises)",
+        onActionClick = onOpenExerciseLibrary,
         modifier = modifier
     )
 }

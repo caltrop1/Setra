@@ -2,14 +2,20 @@ package com.sami.setra.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.sami.setra.data.local.preferences.DistanceUnit
 import com.sami.setra.data.local.preferences.UserPreferences
 import com.sami.setra.data.local.preferences.WeightUnit
 import com.sami.setra.ui.screens.create.CreateScreen
+import com.sami.setra.ui.screens.exercises.ExerciseDetailScreen
+import com.sami.setra.ui.screens.exercises.ExerciseDetailViewModel
+import com.sami.setra.ui.screens.exercises.ExerciseListScreen
+import com.sami.setra.ui.screens.exercises.ExerciseListViewModel
 import com.sami.setra.ui.screens.profile.ProfileScreen
 import com.sami.setra.ui.screens.progress.ProgressScreen
 import com.sami.setra.ui.screens.routines.RoutinesScreen
@@ -31,7 +37,9 @@ fun SetraNavHost(
         modifier = modifier
     ) {
         composable<Screen.Splits> {
-            SplitsScreen()
+            SplitsScreen(
+                onOpenExerciseLibrary = { navController.navigate(Screen.ExerciseList) }
+            )
         }
         composable<Screen.Routines> {
             RoutinesScreen()
@@ -48,6 +56,24 @@ fun SetraNavHost(
                 onThemeModeChange = onThemeModeChange,
                 onWeightUnitChange = onWeightUnitChange,
                 onDistanceUnitChange = onDistanceUnitChange
+            )
+        }
+        composable<Screen.ExerciseList> {
+            val exerciseListViewModel: ExerciseListViewModel = viewModel()
+            ExerciseListScreen(
+                viewModel = exerciseListViewModel,
+                onExerciseClick = { exerciseId ->
+                    navController.navigate(Screen.ExerciseDetail(exerciseId))
+                }
+            )
+        }
+        composable<Screen.ExerciseDetail> { backStackEntry ->
+            val detail: Screen.ExerciseDetail = backStackEntry.toRoute()
+            val exerciseDetailViewModel: ExerciseDetailViewModel = viewModel()
+            ExerciseDetailScreen(
+                exerciseId = detail.exerciseId,
+                viewModel = exerciseDetailViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

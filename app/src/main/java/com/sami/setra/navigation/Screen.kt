@@ -29,6 +29,12 @@ sealed interface Screen {
 
     @Serializable
     data object Profile : Screen
+
+    @Serializable
+    data object ExerciseList : Screen
+
+    @Serializable
+    data class ExerciseDetail(val exerciseId: String) : Screen
 }
 
 data class BottomNavItem(
