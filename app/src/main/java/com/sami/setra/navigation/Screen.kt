@@ -19,6 +19,9 @@ sealed interface Screen {
     data object Splits : Screen
 
     @Serializable
+    data class SplitDetail(val splitId: String) : Screen
+
+    @Serializable
     data object Routines : Screen
 
     @Serializable

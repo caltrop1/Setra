@@ -7,11 +7,18 @@ import androidx.room.RoomDatabase
 import com.sami.setra.data.local.database.dao.AppMetaDao
 import com.sami.setra.data.local.database.dao.ExerciseDao
 import com.sami.setra.data.local.database.dao.MuscleDao
+import com.sami.setra.data.local.database.dao.RoutineDao
 import com.sami.setra.data.local.database.entity.AppMetaEntity
 import com.sami.setra.data.local.database.entity.ExerciseEntity
 import com.sami.setra.data.local.database.entity.ExerciseImageEntity
 import com.sami.setra.data.local.database.entity.ExerciseMuscleEntity
 import com.sami.setra.data.local.database.entity.MuscleEntity
+import com.sami.setra.data.local.database.entity.RoutineDayEntity
+import com.sami.setra.data.local.database.entity.RoutineEntity
+import com.sami.setra.data.local.database.entity.RoutineExerciseEntity
+import com.sami.setra.data.local.database.entity.SetTemplateEntity
+import com.sami.setra.data.local.database.entity.SupersetGroupEntity
+import com.sami.setra.data.local.database.entity.WorkoutEntity
 
 @Database(
     entities = [
@@ -19,9 +26,15 @@ import com.sami.setra.data.local.database.entity.MuscleEntity
         ExerciseEntity::class,
         ExerciseImageEntity::class,
         MuscleEntity::class,
-        ExerciseMuscleEntity::class
+        ExerciseMuscleEntity::class,
+        RoutineEntity::class,
+        RoutineDayEntity::class,
+        WorkoutEntity::class,
+        SupersetGroupEntity::class,
+        RoutineExerciseEntity::class,
+        SetTemplateEntity::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 abstract class SetraDatabase : RoomDatabase() {
@@ -29,6 +42,7 @@ abstract class SetraDatabase : RoomDatabase() {
     abstract fun appMetaDao(): AppMetaDao
     abstract fun exerciseDao(): ExerciseDao
     abstract fun muscleDao(): MuscleDao
+    abstract fun routineDao(): RoutineDao
 
     companion object {
         @Volatile

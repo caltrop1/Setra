@@ -49,8 +49,11 @@ fun SetraApp(
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
 
     val currentRoute = navBackStackEntry?.destination?.route
-    val isDetailScreen = currentRoute?.contains("ExerciseDetail") == true
+    val isExerciseDetailScreen = currentRoute?.contains("ExerciseDetail") == true
+    val isSplitDetailScreen = currentRoute?.contains("SplitDetail") == true
     val isListScreen = currentRoute?.contains("ExerciseList") == true
+
+    val hasCustomTopBar = isExerciseDetailScreen || isSplitDetailScreen
 
     val currentDestination: Screen = when {
         currentRoute?.contains("Routines") == true -> Screen.Routines
@@ -78,7 +81,7 @@ fun SetraApp(
             navController.navigateToBottomNavDestination(destination)
         },
         topBar = {
-            if (!isDetailScreen) {
+            if (!hasCustomTopBar) {
                 SetraTopBar(
                     title = screenTitle,
                     subtitle = "Setra • Offline Workout Tracker"
