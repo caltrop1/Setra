@@ -19,6 +19,9 @@ sealed interface Screen {
     data object Splits : Screen
 
     @Serializable
+    data class SplitDetail(val splitId: String) : Screen
+
+    @Serializable
     data object Routines : Screen
 
     @Serializable
@@ -29,6 +32,12 @@ sealed interface Screen {
 
     @Serializable
     data object Profile : Screen
+
+    @Serializable
+    data object ExerciseList : Screen
+
+    @Serializable
+    data class ExerciseDetail(val exerciseId: String) : Screen
 }
 
 data class BottomNavItem(

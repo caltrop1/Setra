@@ -1,0 +1,212 @@
+erDiagram
+
+    %% =========================================================
+    %% EXERCISE LIBRARY
+    %% =========================================================
+
+    EXERCISE {
+        string id PK
+        string name
+        string category
+        string equipment
+        string level
+        string force
+        string mechanic
+        string instructions
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    EXERCISE_IMAGE {
+        long id PK
+        string exerciseId FK
+        string assetPath
+        int ordering
+        string imageType
+    }
+
+    MUSCLE {
+        string id PK
+        string name
+        string bodyRegion
+        string displayName
+        string displayGroup
+        int ordering
+    }
+
+    EXERCISE_MUSCLE {
+        long id PK
+        string exerciseId FK
+        string muscleId FK
+        string role
+        int ordering
+    }
+
+
+    %% =========================================================
+    %% ROUTINE SYSTEM
+    %% =========================================================
+
+    ROUTINE {
+        long id PK
+        string name
+        string description
+        string creatorMetadata
+        string sharedByMetadata
+        boolean isArchived
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    ROUTINE_DAY {
+        long id PK
+        long routineId FK
+        int dayOfWeek
+        int ordering
+    }
+
+    WORKOUT {
+        long id PK
+        long routineDayId FK
+        string name
+        string description
+        int ordering
+    }
+
+    ROUTINE_EXERCISE {
+        long id PK
+        long workoutId FK
+        string exerciseId FK
+        int ordering
+        string notes
+        long supersetGroupId FK
+    }
+
+    SUPERSET_GROUP {
+        long id PK
+        long workoutId FK
+        string name
+        int ordering
+    }
+
+    SET_TEMPLATE {
+        long id PK
+        long routineExerciseId FK
+        int ordering
+        string setType
+        decimal targetReps
+        decimal targetWeight
+        int durationSeconds
+        int restSeconds
+        decimal targetRpe
+        int targetRir
+        string tempo
+        boolean isWarmup
+        boolean isDropSet
+        boolean isFailureSet
+        string notes
+    }
+
+
+    %% =========================================================
+    %% WORKOUT HISTORY / ACTUAL PERFORMANCE
+    %% =========================================================
+
+    WORKOUT_SESSION {
+        long id PK
+        long routineId FK
+        long workoutId FK
+        datetime startedAt
+        datetime completedAt
+        string status
+        string notes
+    }
+
+    SESSION_EXERCISE {
+        long id PK
+        long workoutSessionId FK
+        long exerciseId FK
+        string exerciseNameSnapshot
+        string notesSnapshot
+        int ordering
+    }
+
+    COMPLETED_SET {
+        long id PK
+        long sessionExerciseId FK
+        int ordering
+        string setType
+        decimal weight
+        decimal reps
+        int durationSeconds
+        decimal rpe
+        int rir
+        string tempo
+        boolean isWarmup
+        boolean isDropSet
+        boolean isFailureSet
+        datetime completedAt
+        string notes
+    }
+
+
+    %% =========================================================
+    %% PERSONAL RECORDS
+    %% =========================================================
+
+    PERSONAL_RECORD {
+        long id PK
+        string exerciseId FK
+        long completedSetId FK
+        string recordType
+        decimal value
+        decimal weight
+        decimal reps
+        datetime achievedAt
+    }
+
+
+    %% =========================================================
+    %% EXERCISE LIBRARY RELATIONSHIPS
+    %% =========================================================
+
+    EXERCISE ||--o{ EXERCISE_IMAGE : "has"
+    EXERCISE ||--o{ EXERCISE_MUSCLE : "targets"
+    MUSCLE ||--o{ EXERCISE_MUSCLE : "used by"
+
+
+    %% =========================================================
+    %% ROUTINE RELATIONSHIPS
+    %% =========================================================
+
+    ROUTINE ||--|{ ROUTINE_DAY : "contains"
+    ROUTINE_DAY ||--o{ WORKOUT : "contains"
+    WORKOUT ||--o{ ROUTINE_EXERCISE : "contains"
+
+    EXERCISE ||--o{ ROUTINE_EXERCISE : "used in"
+
+    ROUTINE_EXERCISE ||--o{ SET_TEMPLATE : "defines"
+
+    WORKOUT ||--o{ SUPERSET_GROUP : "contains"
+    SUPERSET_GROUP ||--o{ ROUTINE_EXERCISE : "groups"
+
+
+    %% =========================================================
+    %% WORKOUT HISTORY RELATIONSHIPS
+    %% =========================================================
+
+    ROUTINE ||--o{ WORKOUT_SESSION : "originates"
+    WORKOUT ||--o{ WORKOUT_SESSION : "started from"
+
+    WORKOUT_SESSION ||--|{ SESSION_EXERCISE : "records"
+    EXERCISE ||--o{ SESSION_EXERCISE : "performed"
+
+    SESSION_EXERCISE ||--|{ COMPLETED_SET : "contains"
+
+
+    %% =========================================================
+    %% PERSONAL RECORD RELATIONSHIPS
+    %% =========================================================
+
+    EXERCISE ||--o{ PERSONAL_RECORD : "has"
+    COMPLETED_SET ||--o{ PERSONAL_RECORD : "establishes"

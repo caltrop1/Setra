@@ -181,6 +181,35 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(Dimens.spaceLarge))
 
+        // Exercise Database Attribution Section
+        SetraSectionHeader(title = "Exercise Database Attribution")
+
+        SetraCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Free Exercise DB",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
+                Text(
+                    text = "yuhonas/free-exercise-db",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(Dimens.spaceSmall))
+                Text(
+                    text = "This exercise dataset and images are released into the public domain under the Unlicense. Fully available offline without external server dependencies.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SetraTheme.extendedColors.textMuted
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Dimens.spaceLarge))
+
         // About / System Info
         SetraSectionHeader(title = "App Information")
 
@@ -198,7 +227,7 @@ fun ProfileScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "1.0.0 (Phase 1)",
+                        text = "1.1.0 (Phase 2)",
                         style = MaterialTheme.typography.bodyMedium,
                         color = SetraTheme.extendedColors.textMuted
                     )
