@@ -1,38 +1,61 @@
 package com.sami.setra.ui.screens.splits
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.sami.setra.data.model.SplitTemplate
-import com.sami.setra.ui.components.SetraGlassSurface
-import com.sami.setra.ui.components.SetraSecondaryButton
-import com.sami.setra.ui.components.SetraSectionHeader
+import com.sami.setra.ui.components.SetraCard
+import com.sami.setra.ui.components.SetraPillToggle
 import com.sami.setra.ui.theme.Dimens
 import com.sami.setra.ui.theme.SetraTheme
+import com.sami.setra.ui.theme.SplitTealAccent
 
 @Composable
 fun SplitsScreen(
     splitsViewModel: SplitsViewModel,
     onSplitClick: (String) -> Unit,
-    onUseSplitClick: (SplitTemplate) -> Unit,
-    onOpenExerciseLibrary: () -> Unit,
+    onOpenSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val splits = splitsViewModel.splits
+    var selectedToggleIndex by remember { mutableIntStateOf(0) }
 
     LazyColumn(
         modifier = modifier
@@ -41,53 +64,176 @@ fun SplitsScreen(
         contentPadding = PaddingValues(top = Dimens.spaceMedium, bottom = Dimens.spaceXXLarge),
         verticalArrangement = Arrangement.spacedBy(Dimens.spaceMedium)
     ) {
-        // Hero Header Banner
+        // Top Header
         item {
-            SetraGlassSurface(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Dimens.spaceLarge)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Training Splits",
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.semantics { heading() }
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(Dimens.radiusMedium))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.GridView,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Dimens.iconLarge)
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
+                    Spacer(modifier = Modifier.width(Dimens.spaceMedium))
 
-                    Text(
-                        text = "Start from a proven weekly training template. Using a split creates a user-owned copy in My Routines that you can customize.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = SetraTheme.extendedColors.textMuted
-                    )
+                    Column(modifier = Modifier.semantics { heading() }) {
+                        Text(
+                            text = "Splits",
+                            style = MaterialTheme.typography.displayMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            text = "Build your strength. One split at a time.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SetraTheme.extendedColors.textMuted
+                        )
+                    }
+                }
 
-                    Spacer(modifier = Modifier.height(Dimens.spaceMedium))
-
-                    SetraSecondaryButton(
-                        text = "Browse Exercise Library (870+ Exercises)",
-                        onClick = onOpenExerciseLibrary
-                    )
+                // Search Icon Button
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = onOpenSearch) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search exercises or splits",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
 
+        // Segmented Pill Toggle: [ Browse ]  [ My Splits ]
         item {
-            SetraSectionHeader(title = "Built-In Training Templates")
+            SetraPillToggle(
+                options = listOf("Browse", "My Splits"),
+                selectedIndex = selectedToggleIndex,
+                onOptionSelected = { selectedToggleIndex = it }
+            )
         }
 
+        // Section Title: Popular Splits
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.LocalFireDepartment,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(Dimens.iconMedium)
+                    )
+                    Spacer(modifier = Modifier.width(Dimens.spaceXSmall))
+                    Text(
+                        text = "Popular Splits",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Text(
+                    text = "See all >",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable { }
+                )
+            }
+        }
+
+        // Split Cards
         items(
-            items = splits,
+            items = splits.filter { it.id != "custom" },
             key = { it.id }
         ) { split ->
             SplitCard(
                 split = split,
-                onSplitClick = { onSplitClick(split.id) },
-                onUseSplitClick = { onUseSplitClick(split) }
+                onSplitClick = { onSplitClick(split.id) }
             )
+        }
+
+        // Custom Split Bottom Card
+        item {
+            SetraCard(
+                onClick = { onSplitClick("custom") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(Dimens.radiusMedium))
+                                .background(SplitTealAccent.copy(alpha = 0.18f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = SplitTealAccent,
+                                modifier = Modifier.size(Dimens.iconMedium)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(Dimens.spaceMedium))
+
+                        Column {
+                            Text(
+                                text = "Want something custom?",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Create your own routine or import a plan.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SetraTheme.extendedColors.textMuted
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = SetraTheme.extendedColors.textMuted,
+                        modifier = Modifier.size(Dimens.iconMedium)
+                    )
+                }
+            }
         }
     }
 }
