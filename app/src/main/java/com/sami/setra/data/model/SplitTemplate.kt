@@ -15,6 +15,7 @@ data class SplitTemplate(
     val description: String,
     val targetFrequency: String, // e.g. "4 Days / Week"
     val category: String, // e.g. "Hypertrophy & Strength"
+    val imageKey: String = "custom",
     val days: List<SplitTemplateDay>
 ) {
     val activeDaysCount: Int

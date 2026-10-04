@@ -1,5 +1,9 @@
 package com.sami.setra.ui.theme
 
+import android.graphics.Color.TRANSPARENT
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -7,8 +11,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 enum class ThemeMode {
     SYSTEM,
@@ -91,6 +98,28 @@ fun SetraTheme(
             glassBorder = SetraLightGlassBorder,
             textMuted = SetraLightTextMuted
         )
+    }
+
+    val view = LocalView.current
+    SideEffect {
+        if (view.isInEditMode) return@SideEffect
+
+        val activity = view.context as? ComponentActivity ?: return@SideEffect
+        val systemBarStyle = if (darkTheme) {
+            SystemBarStyle.dark(TRANSPARENT)
+        } else {
+            SystemBarStyle.light(TRANSPARENT, TRANSPARENT)
+        }
+
+        activity.enableEdgeToEdge(
+            statusBarStyle = systemBarStyle,
+            navigationBarStyle = systemBarStyle
+        )
+
+        val insetsController = WindowCompat.getInsetsController(activity.window, view)
+        val useDarkSystemBarIcons = !darkTheme
+        insetsController.isAppearanceLightStatusBars = useDarkSystemBarIcons
+        insetsController.isAppearanceLightNavigationBars = useDarkSystemBarIcons
     }
 
     CompositionLocalProvider(

@@ -33,6 +33,9 @@ class RoutineRepository(
             name = "My ${template.name}",
             description = template.description,
             creatorMetadata = "Copied from Setra ${template.name} Template",
+            imageSource = "BUILT_IN",
+            builtInImageId = template.imageKey,
+            userImageUri = null,
             createdAt = System.currentTimeMillis(),
             updatedAt = System.currentTimeMillis()
         )

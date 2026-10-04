@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.GridView
+
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -57,60 +60,47 @@ fun SplitsScreen(
     val splits = splitsViewModel.splits
     var selectedToggleIndex by remember { mutableIntStateOf(0) }
 
+    val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = Dimens.spaceMedium),
-        contentPadding = PaddingValues(top = Dimens.spaceMedium, bottom = Dimens.spaceXXLarge),
+        contentPadding = PaddingValues(
+            top = statusBarTop,
+            bottom = Dimens.spaceXXLarge
+        ),
         verticalArrangement = Arrangement.spacedBy(Dimens.spaceMedium)
     ) {
-        // Top Header
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics { heading() }
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(RoundedCornerShape(Dimens.radiusMedium))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.GridView,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(Dimens.iconLarge)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(Dimens.spaceMedium))
-
-                    Column(modifier = Modifier.semantics { heading() }) {
-                        Text(
-                            text = "Splits",
-                            style = MaterialTheme.typography.displayMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = "Build your strength. One split at a time.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SetraTheme.extendedColors.textMuted
-                        )
-                    }
+                    Text(
+                        text = "Splits",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Build your strength. One split at a time.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = SetraTheme.extendedColors.textMuted
+                    )
                 }
 
-                // Search Icon Button
+                Spacer(modifier = Modifier.width(Dimens.spaceMedium))
+
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(42.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
@@ -119,7 +109,8 @@ fun SplitsScreen(
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search exercises or splits",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(Dimens.iconMedium)
                         )
                     }
                 }

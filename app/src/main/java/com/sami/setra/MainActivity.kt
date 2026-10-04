@@ -64,30 +64,13 @@ fun SetraApp(
         else -> Screen.Splits
     }
 
-    val screenTitle = when {
-        isListScreen -> "Exercise Library"
-        currentDestination == Screen.Splits -> "Splits"
-        currentDestination == Screen.Routines -> "My Routines"
-        currentDestination == Screen.Create -> "Create"
-        currentDestination == Screen.Progress -> "Progress"
-        currentDestination == Screen.Profile -> "Profile"
-        else -> "Setra"
-    }
-
     SetraScaffold(
         currentDestination = currentDestination,
         bottomNavItems = bottomNavItems,
         onNavigateToDestination = { destination ->
             navController.navigateToBottomNavDestination(destination)
         },
-        topBar = {
-            if (!hasCustomTopBar) {
-                SetraTopBar(
-                    title = screenTitle,
-                    subtitle = "Setra • Offline Workout Tracker"
-                )
-            }
-        },
+        topBar = {},
         modifier = modifier
     ) { innerPadding ->
         SetraNavHost(

@@ -4,10 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material3.DropdownMenu
@@ -34,7 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -44,10 +42,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sami.setra.data.local.database.relation.RoutineWithDays
 import com.sami.setra.ui.components.SetraCard
+import com.sami.setra.ui.components.SplitArtworkImage
 import com.sami.setra.ui.theme.Dimens
 import com.sami.setra.ui.theme.SetraTheme
+import com.sami.setra.ui.theme.SplitArtwork
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RoutineCard(
     routineWithDays: RoutineWithDays,
@@ -55,16 +54,9 @@ fun RoutineCard(
     modifier: Modifier = Modifier
 ) {
     val routine = routineWithDays.routine
+    val imageRes = SplitArtwork.getRoutineImageRes(routine.name, routine.builtInImageId)
+    val imageAlignment = SplitArtwork.getRoutineImageAlignment(routine.name, routine.builtInImageId)
     var showMenu by remember { mutableStateOf(false) }
-
-    // Collect tags from workout names (e.g. Upper, Lower, Chest, Back)
-    val tags = remember(routineWithDays) {
-        routineWithDays.routineDays
-            .flatMap { it.workouts }
-            .map { it.workout.name }
-            .distinct()
-            .take(3)
-    }
 
     SetraCard(
         modifier = modifier
@@ -76,95 +68,64 @@ fun RoutineCard(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = Dimens.spaceMedium)
             ) {
-                // Left Icon / Image Thumbnail
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(Dimens.radiusMedium))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
+                Text(
+                    text = routine.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.FitnessCenter,
+                        imageVector = Icons.Outlined.CalendarToday,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(Dimens.iconLarge)
+                        modifier = Modifier.size(14.dp)
                     )
-                }
-
-                Spacer(modifier = Modifier.width(Dimens.spaceMedium))
-
-                Column {
+                    Spacer(modifier = Modifier.width(Dimens.spaceXSmall))
                     Text(
-                        text = routine.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        text = "${routineWithDays.activeDaysCount} training days • ${routineWithDays.restDaysCount} rest day${if (routineWithDays.restDaysCount == 1) "" else "s"}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = SetraTheme.extendedColors.textMuted
                     )
-
-                    Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
-
-                    // Calendar / Days summary line
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.CalendarToday,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(Dimens.spaceXSmall))
-                        Text(
-                            text = "${routineWithDays.activeDaysCount} training days • ${routineWithDays.restDaysCount} rest day${if (routineWithDays.restDaysCount == 1) "" else "s"}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SetraTheme.extendedColors.textMuted
-                        )
-                    }
-
-                    if (tags.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
-
-                        // Tags row
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(Dimens.spaceXSmall),
-                            verticalArrangement = Arrangement.spacedBy(Dimens.spaceXSmall)
-                        ) {
-                            tags.forEach { tag ->
-                                Box(
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f))
-                                        .padding(horizontal = Dimens.spaceSmall, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = tag,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                        }
-                    }
                 }
             }
 
-            // Right side: Overflow menu & chevron
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box {
-                    IconButton(onClick = { showMenu = true }) {
+            SplitArtworkImage(
+                imageRes = imageRes,
+                alignment = imageAlignment,
+                modifier = Modifier
+                    .width(112.dp)
+                    .height(92.dp),
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+            ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = Dimens.spaceXSmall, end = Dimens.spaceXSmall)
+                ) {
+                    IconButton(
+                        onClick = { showMenu = true },
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(Color(0x66000000), CircleShape)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "Routine options",
-                            tint = SetraTheme.extendedColors.textMuted
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
 
@@ -192,8 +153,11 @@ fun RoutineCard(
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = null,
-                    tint = SetraTheme.extendedColors.textMuted,
-                    modifier = Modifier.size(Dimens.iconMedium)
+                    tint = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = Dimens.spaceSmall)
+                        .size(Dimens.iconMedium)
                 )
             }
         }

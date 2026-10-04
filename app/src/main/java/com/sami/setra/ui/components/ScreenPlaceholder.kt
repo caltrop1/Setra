@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -43,6 +44,7 @@ fun ScreenPlaceholder(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceMedium)
     ) {
@@ -94,7 +96,7 @@ fun ScreenPlaceholder(
 
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.displayMedium,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.semantics { heading() }

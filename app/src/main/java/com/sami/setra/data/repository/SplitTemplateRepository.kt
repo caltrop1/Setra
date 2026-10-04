@@ -13,6 +13,7 @@ class SplitTemplateRepository {
             description = "A balanced 4-day training structure alternating dedicated upper body and lower body sessions with recovery days.",
             targetFrequency = "4 Days / Week",
             category = "Hypertrophy & Strength",
+            imageKey = "upper_lower",
             days = listOf(
                 SplitTemplateDay(1, "Monday", false, "Upper Body A", "Focus on Chest, Back, Shoulders & Arms", listOf("Barbell_Bench_Press_-_Medium_Grip", "Bent_Over_Barbell_Row", "Barbell_Shoulder_Press")),
                 SplitTemplateDay(2, "Tuesday", false, "Lower Body A", "Focus on Quads, Hamstrings & Calves", listOf("Barbell_Squat", "Barbell_Deadlift", "Leg_Press")),
@@ -31,6 +32,7 @@ class SplitTemplateRepository {
             description = "A popular 6-day or 3-day split organizing movements by mechanics: Push (Chest/Shoulders/Triceps), Pull (Back/Biceps), and Legs.",
             targetFrequency = "6 Days / Week",
             category = "Bodybuilding & Muscle Building",
+            imageKey = "push_pull_legs",
             days = listOf(
                 SplitTemplateDay(1, "Monday", false, "Push A", "Chest, Shoulders & Triceps", listOf("Barbell_Bench_Press_-_Medium_Grip", "Dumbbell_Shoulder_Press", "Triceps_Pushdown")),
                 SplitTemplateDay(2, "Tuesday", false, "Pull A", "Back, Rear Delts & Biceps", listOf("Bent_Over_Barbell_Row", "Barbell_Curl", "Dumbbell_Incline_Row")),
@@ -49,6 +51,7 @@ class SplitTemplateRepository {
             description = "A classic 5-day body-part split focusing on maximum volume for one major muscle group per day.",
             targetFrequency = "5 Days / Week",
             category = "Hypertrophy & Pump",
+            imageKey = "bro_split",
             days = listOf(
                 SplitTemplateDay(1, "Monday", false, "Chest Day", "Complete Chest Isolation & Compound Work", listOf("Barbell_Bench_Press_-_Medium_Grip", "Incline_Dumbbell_Press", "Dumbbell_Flyes")),
                 SplitTemplateDay(2, "Tuesday", false, "Back Day", "Thickness & Width for Back", listOf("Barbell_Deadlift", "Bent_Over_Barbell_Row", "Wide-Grip_Lat_Pulldown")),
@@ -67,6 +70,7 @@ class SplitTemplateRepository {
             description = "A high-frequency 3-day weekly split hitting major compound movements in every workout session.",
             targetFrequency = "3 Days / Week",
             category = "Strength & General Fitness",
+            imageKey = "full_body",
             days = listOf(
                 SplitTemplateDay(1, "Monday", false, "Full Body A", "Squat, Bench Press, & Row Focus", listOf("Barbell_Squat", "Barbell_Bench_Press_-_Medium_Grip", "Bent_Over_Barbell_Row")),
                 SplitTemplateDay(2, "Tuesday", true, "Rest Day", "Recovery"),
@@ -85,6 +89,7 @@ class SplitTemplateRepository {
             description = "The classic antagonist muscle group pairing: Chest/Back, Shoulders/Arms, and Legs.",
             targetFrequency = "6 Days / Week",
             category = "Classic Physique & Volume",
+            imageKey = "arnold_split",
             days = listOf(
                 SplitTemplateDay(1, "Monday", false, "Chest & Back A", "Antagonistic Upper Body Push & Pull", listOf("Barbell_Bench_Press_-_Medium_Grip", "Bent_Over_Barbell_Row", "Incline_Dumbbell_Press")),
                 SplitTemplateDay(2, "Tuesday", false, "Shoulders & Arms A", "Delts, Biceps & Triceps", listOf("Barbell_Shoulder_Press", "Barbell_Curl", "Triceps_Pushdown")),
@@ -103,6 +108,7 @@ class SplitTemplateRepository {
             description = "A flexible 7-day template starting point for designing your own personalized training week.",
             targetFrequency = "Custom Days / Week",
             category = "Personalized",
+            imageKey = "custom",
             days = listOf(
                 SplitTemplateDay(1, "Monday", false, "Workout Day 1", "Custom Workout Session"),
                 SplitTemplateDay(2, "Tuesday", false, "Workout Day 2", "Custom Workout Session"),

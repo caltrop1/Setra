@@ -34,7 +34,7 @@ import com.sami.setra.data.local.database.entity.WorkoutEntity
         RoutineExerciseEntity::class,
         SetTemplateEntity::class
     ],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 abstract class SetraDatabase : RoomDatabase() {
