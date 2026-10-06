@@ -1,7 +1,9 @@
 package com.sami.setra.navigation
 
+import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -16,8 +18,11 @@ import com.sami.setra.ui.screens.exercises.ExerciseDetailScreen
 import com.sami.setra.ui.screens.exercises.ExerciseDetailViewModel
 import com.sami.setra.ui.screens.exercises.ExerciseListScreen
 import com.sami.setra.ui.screens.exercises.ExerciseListViewModel
+import com.sami.setra.ui.screens.exercises.ExercisePickerScreen
 import com.sami.setra.ui.screens.profile.ProfileScreen
 import com.sami.setra.ui.screens.progress.ProgressScreen
+import com.sami.setra.ui.screens.routines.RoutineDetailScreen
+import com.sami.setra.ui.screens.routines.RoutineDetailViewModel
 import com.sami.setra.ui.screens.routines.RoutinesScreen
 import com.sami.setra.ui.screens.routines.RoutinesViewModel
 import com.sami.setra.ui.screens.splits.SplitDetailScreen
@@ -34,8 +39,11 @@ fun SetraNavHost(
     onDistanceUnitChange: (DistanceUnit) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
     val splitsViewModel: SplitsViewModel = viewModel()
     val routinesViewModel: RoutinesViewModel = viewModel()
+    val exerciseListViewModel: ExerciseListViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -62,8 +70,8 @@ fun SetraNavHost(
                     split = split,
                     onBackClick = { navController.popBackStack() },
                     onUseSplitClick = {
-                        splitsViewModel.useSplit(split) {
-                            navController.navigateToBottomNavDestination(Screen.Routines)
+                        splitsViewModel.useSplit(split) { newRoutineId ->
+                            navController.navigate(Screen.RoutineDetail(newRoutineId))
                         }
                     }
                 )
@@ -76,14 +84,61 @@ fun SetraNavHost(
                 onBrowseSplitsClick = {
                     navController.navigateToBottomNavDestination(Screen.Splits)
                 },
+                onRoutineClick = { routineId ->
+                    navController.navigate(Screen.RoutineDetail(routineId))
+                },
                 onOpenSearch = {
                     navController.navigate(Screen.ExerciseList)
                 }
             )
         }
 
+        composable<Screen.RoutineDetail> { backStackEntry ->
+            val detail: Screen.RoutineDetail = backStackEntry.toRoute()
+            val routineDetailViewModel: RoutineDetailViewModel = viewModel(
+                factory = RoutineDetailViewModel.Factory(application, detail.routineId)
+            )
+            RoutineDetailScreen(
+                viewModel = routineDetailViewModel,
+                onBackClick = { navController.popBackStack() },
+                onAddExerciseClick = { workoutId ->
+                    navController.navigate(Screen.ExercisePicker(workoutId))
+                },
+                onRoutineDuplicated = { newRoutineId ->
+                    navController.navigate(Screen.RoutineDetail(newRoutineId))
+                }
+            )
+        }
+
+        composable<Screen.ExercisePicker> { backStackEntry ->
+            val picker: Screen.ExercisePicker = backStackEntry.toRoute()
+            val routineDetailViewModel: RoutineDetailViewModel = viewModel(
+                factory = RoutineDetailViewModel.Factory(application, picker.workoutId)
+            )
+            ExercisePickerScreen(
+                viewModel = exerciseListViewModel,
+                onBackClick = { navController.popBackStack() },
+                onExerciseSelected = { exerciseId ->
+                    routineDetailViewModel.addExerciseToWorkout(picker.workoutId, exerciseId)
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable<Screen.Create> {
-            CreateScreen()
+            CreateScreen(
+                onCreateRoutineClick = {
+                    routinesViewModel.createNewRoutine { newRoutineId ->
+                        navController.navigate(Screen.RoutineDetail(newRoutineId))
+                    }
+                },
+                onBrowseSplitsClick = {
+                    navController.navigateToBottomNavDestination(Screen.Splits)
+                },
+                onBrowseExercisesClick = {
+                    navController.navigate(Screen.ExerciseList)
+                }
+            )
         }
 
         composable<Screen.Progress> {
@@ -100,7 +155,6 @@ fun SetraNavHost(
         }
 
         composable<Screen.ExerciseList> {
-            val exerciseListViewModel: ExerciseListViewModel = viewModel()
             ExerciseListScreen(
                 viewModel = exerciseListViewModel,
                 onExerciseClick = { exerciseId ->

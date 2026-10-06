@@ -17,6 +17,22 @@ class RoutinesViewModel(application: Application) : AndroidViewModel(application
     val routines: StateFlow<List<RoutineWithDays>> = repository.getAllActiveRoutines()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    fun createNewRoutine(onCreated: (Long) -> Unit) {
+        viewModelScope.launch {
+            val newRoutineId = repository.createNewRoutine()
+            onCreated(newRoutineId)
+        }
+    }
+
+    fun duplicateRoutine(routineId: Long, onDuplicated: (Long) -> Unit) {
+        viewModelScope.launch {
+            val newRoutineId = repository.duplicateRoutine(routineId)
+            if (newRoutineId > 0) {
+                onDuplicated(newRoutineId)
+            }
+        }
+    }
+
     fun deleteRoutine(routineId: Long) {
         viewModelScope.launch {
             repository.deleteRoutine(routineId)

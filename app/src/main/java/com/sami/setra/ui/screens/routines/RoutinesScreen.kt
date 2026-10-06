@@ -19,9 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Search
@@ -56,12 +54,19 @@ import com.sami.setra.ui.theme.SetraTheme
 fun RoutinesScreen(
     viewModel: RoutinesViewModel,
     onBrowseSplitsClick: () -> Unit,
+    onRoutineClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     onOpenSearch: () -> Unit = {}
 ) {
     val routines by viewModel.routines.collectAsStateWithLifecycle()
     var selectedToggleIndex by remember { mutableIntStateOf(0) }
     val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
+    fun handleCreateRoutine() {
+        viewModel.createNewRoutine { newRoutineId ->
+            onRoutineClick(newRoutineId)
+        }
+    }
 
     LazyColumn(
         modifier = modifier
@@ -142,7 +147,7 @@ fun RoutinesScreen(
                 )
 
                 Button(
-                    onClick = onBrowseSplitsClick,
+                    onClick = { handleCreateRoutine() },
                     shape = ButtonShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -183,16 +188,23 @@ fun RoutinesScreen(
                         )
                         Spacer(modifier = Modifier.height(Dimens.spaceSmall))
                         Text(
-                            text = "Choose a built-in split from the Splits tab to create your first routine.",
+                            text = "Create a custom routine or choose a built-in split from the Splits tab.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = SetraTheme.extendedColors.textMuted
                         )
                         Spacer(modifier = Modifier.height(Dimens.spaceLarge))
-                        SetraPrimaryButton(
-                            text = "Browse Training Splits",
-                            onClick = onBrowseSplitsClick,
-                            modifier = Modifier.width(220.dp)
-                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.spaceSmall)) {
+                            SetraPrimaryButton(
+                                text = "Create Routine",
+                                onClick = { handleCreateRoutine() },
+                                modifier = Modifier.weight(1f)
+                            )
+                            SetraPrimaryButton(
+                                text = "Browse Splits",
+                                onClick = onBrowseSplitsClick,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
             }
@@ -203,11 +215,17 @@ fun RoutinesScreen(
             ) { routineWithDays ->
                 RoutineCard(
                     routineWithDays = routineWithDays,
+                    onClick = { onRoutineClick(routineWithDays.routine.id) },
+                    onDuplicateClick = {
+                        viewModel.duplicateRoutine(routineWithDays.routine.id) { newId ->
+                            onRoutineClick(newId)
+                        }
+                    },
                     onDeleteClick = { viewModel.deleteRoutine(routineWithDays.routine.id) }
                 )
             }
 
-            // Bottom Empty / Call-to-action Banner matching mockups
+            // Bottom Call-to-action Banner
             item {
                 Column(
                     modifier = Modifier
@@ -233,7 +251,7 @@ fun RoutinesScreen(
                     Spacer(modifier = Modifier.height(Dimens.spaceSmall))
 
                     Text(
-                        text = "No more routines?",
+                        text = "Build or explore routines",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -242,7 +260,7 @@ fun RoutinesScreen(
                     Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
 
                     Text(
-                        text = "Create your own or import a template\nfrom a friend.",
+                        text = "Create custom training plans or start from a pre-made split.",
                         style = MaterialTheme.typography.bodySmall,
                         color = SetraTheme.extendedColors.textMuted,
                         textAlign = TextAlign.Center
@@ -251,9 +269,9 @@ fun RoutinesScreen(
                     Spacer(modifier = Modifier.height(Dimens.spaceMedium))
 
                     SetraPrimaryButton(
-                        text = "+ Create Routine",
-                        onClick = onBrowseSplitsClick,
-                        modifier = Modifier.width(220.dp)
+                        text = "+ Create Custom Routine",
+                        onClick = { handleCreateRoutine() },
+                        modifier = Modifier.width(240.dp)
                     )
                 }
             }

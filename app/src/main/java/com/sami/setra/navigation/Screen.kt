@@ -25,6 +25,12 @@ sealed interface Screen {
     data object Routines : Screen
 
     @Serializable
+    data class RoutineDetail(val routineId: Long) : Screen
+
+    @Serializable
+    data class ExercisePicker(val workoutId: Long) : Screen
+
+    @Serializable
     data object Create : Screen
 
     @Serializable
