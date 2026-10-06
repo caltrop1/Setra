@@ -12,6 +12,9 @@ data class RoutineEntity(
     val creatorMetadata: String? = null,
     val sharedByMetadata: String? = null,
     val isArchived: Boolean = false,
+    val imageSource: String = "BUILT_IN",
+    val builtInImageId: String? = null,
+    val userImageUri: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

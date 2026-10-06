@@ -48,12 +48,7 @@ fun SetraNavHost(
                 onSplitClick = { splitId ->
                     navController.navigate(Screen.SplitDetail(splitId))
                 },
-                onUseSplitClick = { template ->
-                    splitsViewModel.useSplit(template) {
-                        navController.navigateToBottomNavDestination(Screen.Routines)
-                    }
-                },
-                onOpenExerciseLibrary = {
+                onOpenSearch = {
                     navController.navigate(Screen.ExerciseList)
                 }
             )
@@ -80,6 +75,9 @@ fun SetraNavHost(
                 viewModel = routinesViewModel,
                 onBrowseSplitsClick = {
                     navController.navigateToBottomNavDestination(Screen.Splits)
+                },
+                onOpenSearch = {
+                    navController.navigate(Screen.ExerciseList)
                 }
             )
         }

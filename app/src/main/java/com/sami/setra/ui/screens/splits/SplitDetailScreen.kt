@@ -122,7 +122,7 @@ fun SplitDetailScreen(
 
                     Text(
                         text = split.name,
-                        style = MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.semantics { heading() }

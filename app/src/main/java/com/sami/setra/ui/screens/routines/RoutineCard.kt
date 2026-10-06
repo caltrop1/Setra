@@ -1,4 +1,4 @@
-package com.sami.setra.ui.screens.splits
+package com.sami.setra.ui.screens.routines
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,61 +15,55 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.DirectionsRun
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.sami.setra.data.model.SplitTemplate
+import com.sami.setra.data.local.database.relation.RoutineWithDays
 import com.sami.setra.ui.components.SetraCard
 import com.sami.setra.ui.components.SplitArtworkImage
 import com.sami.setra.ui.theme.Dimens
 import com.sami.setra.ui.theme.SetraTheme
 import com.sami.setra.ui.theme.SplitArtwork
-import com.sami.setra.ui.theme.getSplitAccentColor
 
 @Composable
-fun SplitCard(
-    split: SplitTemplate,
-    onSplitClick: () -> Unit,
+fun RoutineCard(
+    routineWithDays: RoutineWithDays,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val accentColor = getSplitAccentColor(split.id)
-    val badgeIcon: ImageVector = when (split.id) {
-        "upper_lower" -> Icons.AutoMirrored.Filled.TrendingUp
-        "push_pull_legs" -> Icons.Default.FitnessCenter
-        "full_body" -> Icons.Default.Person
-        "bro_split", "legs_focus" -> Icons.AutoMirrored.Filled.DirectionsRun
-        else -> Icons.Default.AutoAwesome
-    }
-
-    val imageRes = SplitArtwork.getSplitImageRes(split.id)
-    val imageAlignment = SplitArtwork.getSplitImageAlignment(split.id)
+    val routine = routineWithDays.routine
+    val imageRes = SplitArtwork.getRoutineImageRes(routine.name, routine.builtInImageId)
+    val imageAlignment = SplitArtwork.getRoutineImageAlignment(routine.name, routine.builtInImageId)
+    var showMenu by remember { mutableStateOf(false) }
 
     SetraCard(
-        onClick = onSplitClick,
         modifier = modifier
             .fillMaxWidth()
             .semantics {
                 role = Role.Button
-                contentDescription = "Split template ${split.name}, ${split.targetFrequency}"
+                contentDescription = "Routine ${routine.name}, ${routineWithDays.activeDaysCount} training days"
             }
     ) {
         Row(
@@ -82,63 +76,29 @@ fun SplitCard(
                     .padding(end = Dimens.spaceMedium)
             ) {
                 Text(
-                    text = split.name,
+                    text = routine.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                Text(
-                    text = split.category,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = SetraTheme.extendedColors.textMuted
-                )
-
-                Spacer(modifier = Modifier.height(Dimens.spaceSmall))
+                Spacer(modifier = Modifier.height(Dimens.spaceXSmall))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Outlined.CalendarToday,
                         contentDescription = null,
-                        tint = accentColor,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(Dimens.spaceXSmall))
                     Text(
-                        text = split.targetFrequency,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
+                        text = "${routineWithDays.activeDaysCount} training days • ${routineWithDays.restDaysCount} rest day${if (routineWithDays.restDaysCount == 1) "" else "s"}",
+                        style = MaterialTheme.typography.bodySmall,
                         color = SetraTheme.extendedColors.textMuted
                     )
-                }
-
-                Spacer(modifier = Modifier.height(Dimens.spaceSmall))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.spaceXSmall),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val dayLetters = listOf("M", "T", "W", "T", "F", "S", "S")
-                    split.days.forEachIndexed { index, day ->
-                        val isTrainingDay = !day.isRestDay
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (isTrainingDay) accentColor
-                                    else MaterialTheme.colorScheme.surface
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = dayLetters.getOrElse(index) { "D" },
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isTrainingDay) Color.White else SetraTheme.extendedColors.textMuted
-                            )
-                        }
-                    }
                 }
             }
 
@@ -150,6 +110,46 @@ fun SplitCard(
                     .height(92.dp),
                 backgroundColor = MaterialTheme.colorScheme.surfaceVariant
             ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = Dimens.spaceXSmall, end = Dimens.spaceXSmall)
+                ) {
+                    IconButton(
+                        onClick = { showMenu = true },
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(Color(0x66000000), CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Routine options",
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Delete Routine") },
+                            onClick = {
+                                showMenu = false
+                                onDeleteClick()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        )
+                    }
+                }
+
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = null,
